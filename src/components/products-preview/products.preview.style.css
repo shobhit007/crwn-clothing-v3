@@ -1,0 +1,8 @@
+.products-preview-container {
+  display: flex;
+  gap: 1rem;
+}
+
+.product-preview-info {
+  padding: 1.25rem 0;
+}
