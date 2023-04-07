@@ -4,15 +4,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  position: fixed;
-  left: 0;
-  top: 0;
   padding: 0 2.5rem;
-  transition: background-color 0.3s ease-in;
-  background-color: transparent;
-}
-
-.navbar:hover {
   background-color: var(--clr-white);
 }
 
@@ -26,4 +18,8 @@
 .primary-navbar a {
   text-decoration: none;
   color: var(--clr-black);
+}
+
+.cart-button {
+  cursor: pointer;
 }

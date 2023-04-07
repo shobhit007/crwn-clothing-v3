@@ -1,66 +1,145 @@
 import "./productDetail.css";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useLayoutEffect } from "react";
+import { useParams } from "react-router-dom";
 
-import { Link, useParams, useLocation } from "react-router-dom";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 
-import api from "../../api/api";
+// import api from "../../api/api";
+
+import { productData } from "../../product.data";
+
+import { useDispatch, useSelector } from "react-redux";
+
+import { addItemToCart } from "../../store/cart/cart.actions";
+
+gsap.registerPlugin(ScrollTrigger);
+
+const getProductImages = (product, productId) => {
+  const article = product.articlesList.find((item) => item.code === productId);
+
+  const { galleryDetails } = article;
+
+  return galleryDetails;
+};
+
+const getProductVariantSizes = (product, productId) => {
+  const article = product.articlesList.filter(
+    (item) => item.code === productId
+  )[0];
+
+  const { variantsList } = article;
+
+  return variantsList;
+};
 
 function ProductDetail() {
   const { id: productId } = useParams();
   const [product, setProduct] = useState(null);
   const [isModalOpen, setIsmodalOpen] = useState(false);
-  const {
-    state: { galleryImages, variantSizes },
-  } = useLocation();
+  const [productSize, setProductSize] = useState("");
 
-  console.log(isModalOpen);
+  const dispatch = useDispatch();
+
+  const cartItems = useSelector((state) => state.cart.cartItems);
 
   useEffect(() => {
-    const getProductDetail = async () => {
-      try {
-        const response = await api.get(`/products/detail`, {
-          params: {
-            lang: "en",
-            country: "us",
-            productcode: productId,
-          },
-        });
-        setProduct(response.data.product);
-      } catch (error) {
-        console.log(error);
-      }
-    };
+    // const getProductDetail = async () => {
+    //   try {
+    //     const response = await api.get(`/products/detail`, {
+    //       params: {
+    //         lang: "en",
+    //         country: "us",
+    //         productcode: productId,
+    //       },
+    //     });
+    //     setProduct(response.data.product);
+    //   } catch (error) {
+    //     console.log(error);
+    //   }
+    // };
 
-    getProductDetail();
-  }, [productId]);
+    // getProductDetail();
+    setProduct(productData);
+  }, []);
 
   useEffect(() => {
     if (product) {
-      const toggleModal = () => {
-        setIsmodalOpen(false);
-      };
+      const productSizes = getProductVariantSizes(product, productId);
 
+      setProductSize(productSizes[0].size.sizeFilter);
+    }
+  }, [product, productId]);
+
+  useEffect(() => {
+    if (product) {
       const modal = document.querySelector(".modal");
 
-      modal.addEventListener("click", toggleModal);
+      const toggleModal = (event) => {
+        if (event.target === modal) {
+          setIsmodalOpen(false);
+        }
+      };
 
-      return () => modal.removeEventListener("click", toggleModal);
+      window.onclick = (e) => toggleModal(e);
+
+      return () => window.removeEventListener("click", toggleModal);
     }
-  }, []);
+  }, [product]);
 
   useEffect(() => {
     isModalOpen && (document.body.style.overflow = "hidden");
     !isModalOpen && (document.body.style.overflow = "unset");
   }, [isModalOpen]);
 
+  useLayoutEffect(() => {
+    let mm = gsap.matchMedia();
+    if (product) {
+      const galleryImages = getProductImages(product, productId);
+      mm.add("(min-width: 991px)", () => {
+        ScrollTrigger.create({
+          trigger: ".product-detail-wrapper",
+          start: "top top",
+          end: `+=${(galleryImages.length - 1) * 100}%`,
+          pin: ".product-info-wrapper",
+          scrub: 1,
+          snap: {
+            snapTo: 1 / (galleryImages.length - 1),
+            delay: 1,
+            duration: 1,
+          },
+        });
+      });
+    }
+    return () => mm.revert();
+  }, [product, productId]);
+
+  const addCartItem = () =>
+    dispatch(
+      addItemToCart(cartItems, {
+        ...product,
+        images: getProductImages(product, productId),
+        size: productSize,
+      })
+    );
+
+  const onhandleProductSizeChange = (e) => {
+    setProductSize(e.target.value);
+    setIsmodalOpen((p) => !p);
+  };
+
   return product ? (
     <div className="product-detial-container">
       <div className="product-detail-wrapper">
         <div className="images-wrapper">
           <ul className="image-slider">
-            {galleryImages.map((image, index) => (
-              <li className="product-slide-item" key={index}>
-                <img src={image.url} alt="" className="product-image-item" />
+            {getProductImages(product, productId).map((image) => (
+              <li className="product-slide-item" key={image.id}>
+                <img
+                  src={image.baseUrl}
+                  alt=""
+                  className="product-image-item"
+                />
               </li>
             ))}
           </ul>
@@ -86,19 +165,72 @@ function ProductDetail() {
               >
                 Show sizes
               </button>
+              {productSize && <span className="fs-500 ml">{productSize}</span>}
             </div>
-            <button className="add-to-cart-button">add to cart</button>
+            <button className="add-to-cart-button" onClick={addCartItem}>
+              add to cart
+            </button>
             <div className="product-links text-align-left">
               <p className="product-link-item">
-                <Link to="#details" className="link">
-                  Product details
-                </Link>
+                <a href="#description" className="link">
+                  Description
+                </a>
               </p>
               <p className="product-link-item">
-                <Link to="#description" className="link">
-                  Description
-                </Link>
+                <a href="#details" className="link">
+                  Product details
+                </a>
               </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="section detail-section">
+        <div className="section-wrapper container">
+          <div className="content-wrapper">
+            <div className="content-12" id="description">
+              <h3
+                className="content-label fw-400 mb"
+                style={{ "--mb": "0.5rem" }}
+              >
+                Description
+              </h3>
+              <p className="fs-500">{product.description}</p>
+            </div>
+
+            <div className="content-12 mt" id="details">
+              <h3
+                className="content-label fw-400 mb"
+                style={{ "--mb": "0.5rem" }}
+              >
+                Product details
+              </h3>
+
+              {product.measurements && (
+                <div className="measurements">
+                  {product.measurements.map((measurement, index) => (
+                    <p
+                      key={index}
+                      className="fs-500 fw-200 mb"
+                      style={{ "--mb": "0.25rem" }}
+                    >
+                      {measurement}
+                    </p>
+                  ))}
+                </div>
+              )}
+
+              {product.materialDetails && (
+                <div className="materials mt">
+                  <h3 className="content-label fw-400">Materials</h3>
+                  {product.materialDetails.map((material, index) => (
+                    <div key={index} className="material-container">
+                      <p className="fs-500">{material.name}</p>
+                      <p className="material-desc">{material.description}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -121,12 +253,13 @@ function ProductDetail() {
             </div>
           </div>
           <div className="modal-content">
-            {variantSizes.map((size) => (
-              <div className="size-row">
+            {getProductVariantSizes(product, productId).map((variant) => (
+              <div className="size-row" key={variant.code}>
                 <input
                   type="button"
-                  value={size.filterCode}
+                  value={variant.size.sizeFilter}
                   className="btn-size"
+                  onClick={onhandleProductSizeChange}
                 />
               </div>
             ))}

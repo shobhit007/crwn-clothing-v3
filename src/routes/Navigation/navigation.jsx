@@ -3,9 +3,22 @@ import React from "react";
 
 import { Outlet } from "react-router-dom";
 
+import { useDispatch, useSelector } from "react-redux";
+
 import { ReactComponent as Logo } from "../../images/crown.svg";
 
+import { setIsCartOpen } from "../../store/cart/cart.actions";
+
+import { selectCartCount } from "../../store/cart/cart.selectors";
+
+import CartModal from "../../components/cart-modal/cart.modal.component";
+
 const Navigation = () => {
+  const dispatch = useDispatch();
+  const handleCartOpen = () => dispatch(setIsCartOpen());
+
+  const cartCount = useSelector(selectCartCount);
+
   return (
     <React.Fragment>
       <header>
@@ -15,7 +28,7 @@ const Navigation = () => {
           </a>
           <ul className="primary-navbar">
             <li>
-              <a href="/" className="nav-link">
+              <a href="/shop" className="nav-link">
                 Shop
               </a>
             </li>
@@ -25,12 +38,14 @@ const Navigation = () => {
               </a>
             </li>
             <li>
-              <a href="/" className="nav-link">
-                Cart
-              </a>
+              <span
+                className="cart-button"
+                onClick={handleCartOpen}
+              >{`Cart (${cartCount})`}</span>
             </li>
           </ul>
         </div>
+        <CartModal />
       </header>
       <Outlet />
     </React.Fragment>

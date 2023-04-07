@@ -3,10 +3,10 @@ import "./product.style.css";
 import { Link } from "react-router-dom";
 
 const Product = ({ product }) => {
-  const { name, galleryImages, variantSizes } = product;
+  const { name, galleryImages } = product;
 
   return (
-    <div className="product" key={product.code}>
+    <div className="product">
       <div className="product-image-container">
         <img className="product-image" src={galleryImages[0].url} alt="" />
       </div>
@@ -14,7 +14,6 @@ const Product = ({ product }) => {
         <Link
           to={`/product/${product.defaultArticle.code}`}
           className="product-title"
-          state={{ variantSizes, galleryImages }}
         >
           <h2>{name}</h2>
         </Link>

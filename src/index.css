@@ -1,5 +1,6 @@
 :root {
   --fs-400: 1rem;
+  --fs-500: 1.25rem;
   --fs-600: 1.875rem;
   --fs-700: clamp(2.25rem, 5vw, 6rem);
 
@@ -60,6 +61,13 @@ body {
 }
 
 /* utility classes */
+.fs-500 {
+  font-size: var(--fs-500);
+}
+
+.fs-600 {
+  font-size: var(--fs-600);
+}
 
 .fw-200 {
   font-weight: var(--fw-200);
@@ -71,6 +79,14 @@ body {
 
 .fw-600 {
   font-weight: var(--fw-600);
+}
+
+.text-color-black {
+  color: var(--clr-black);
+}
+
+.text-color-white {
+  color: var(--clr-white);
 }
 
 .container {
@@ -96,4 +112,21 @@ body {
 
 .text-align-left {
   text-align: left;
+}
+
+.text-align-center {
+  text-align: center;
+}
+
+.mt {
+  margin-top: var(--mt, 1rem);
+}
+.mb {
+  margin-bottom: var(--mb, 1rem);
+}
+.ml {
+  margin-left: var(--ml, 1rem);
+}
+.mr {
+  margin-right: var(--mr, 1rem);
 }
