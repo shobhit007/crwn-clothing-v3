@@ -1,6 +1,7 @@
 import "./cart.modal.style.css";
 
 import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 import { setIsCartOpen } from "../../store/cart/cart.actions";
 import {
@@ -15,6 +16,7 @@ import CartItem from "../cart-item/cart.item.component";
 
 function CartModal() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const isCartOpen = useSelector(selectIsCartOpen);
   const cartItems = useSelector(selectCartItems);
@@ -41,6 +43,11 @@ function CartModal() {
 
   const handleCartOpen = () => dispatch(setIsCartOpen());
 
+  const goToCheckoutHandler = () => {
+    navigate("/checkout");
+    dispatch(setIsCartOpen());
+  };
+
   return (
     <div className={`cart-modal ${isCartOpen && "cart-modal-visible"}`}>
       <div
@@ -65,7 +72,9 @@ function CartModal() {
           ))}
 
           <div className="checkout-btn-container">
-            <button className="checkout-btn">Checkout</button>
+            <button className="checkout-btn" onClick={goToCheckoutHandler}>
+              Checkout
+            </button>
           </div>
         </div>
       </div>

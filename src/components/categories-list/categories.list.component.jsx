@@ -1,90 +1,63 @@
 import "./categories.list.style.css";
-import React from "react";
-
-import { Link } from "react-router-dom";
+import React, { useState } from "react";
 
 import Button from "../button/button.component";
 
+import AnimatedLink from "../link/link.component";
+
 function CategoriesList() {
+  const [isLinksExpanded, setIsLinksExpanded] = useState(false);
+
+  const expandLinks = () => {
+    setIsLinksExpanded((p) => !p);
+  };
   return (
     <div className="shop-container">
       <div className="shop-wrapper">
         <div className="shop-sidebar">
           <div className="sidebar-wrapper">
             <div className="sidebar-content">
-              <h2 className="fs-600">Shop by categories</h2>
-              <ul className="categories-link">
+              <div className="sidebar-header">
+                <button className="sidebar-header-button" onClick={expandLinks}>
+                  <h2 className="fs-600">Shop by categories</h2>
+                  <i
+                    className={`ri-arrow-${
+                      isLinksExpanded ? "up-s" : "down-s"
+                    }-line arrow-down`}
+                  ></i>
+                </button>
+              </div>
+              <ul
+                className={`categories-links ${
+                  isLinksExpanded && "categories-links-visible"
+                }`}
+              >
                 <li className="cat-link-item">
-                  <Link
-                    to="men_all"
-                    className="cat-link fs-500 text-color-black"
-                  >
-                    View all
-                  </Link>
+                  <AnimatedLink to="men_all" text="View all" />
                 </li>
                 <li className="cat-link-item">
-                  <Link
-                    to="men_tshirtstanks"
-                    className="cat-link fs-500 text-color-black"
-                  >
-                    T-shirts & Tanks
-                  </Link>
+                  <AnimatedLink to="men_tshirtstanks" text="T-shirts & Tanks" />
                 </li>
                 <li className="cat-link-item">
-                  <Link
-                    to="men_trousers"
-                    className="cat-link fs-500 text-color-black"
-                  >
-                    Pants
-                  </Link>
+                  <AnimatedLink to="men_trousers" text="Pants" />
                 </li>
                 <li className="cat-link-item">
-                  <Link
+                  <AnimatedLink
                     to="men_hoodiessweatshirts"
-                    className="cat-link fs-500 text-color-black"
-                  >
-                    Hoodies & Sweatshirts
-                  </Link>
+                    text="Hoodies & Sweatshirts"
+                  />
                 </li>
                 <li className="cat-link-item">
-                  <Link
-                    to="men_shirts"
-                    className="cat-link fs-500 text-color-black"
-                  >
-                    Shirts
-                  </Link>
+                  <AnimatedLink to="men_shirts" text="Shirts" />
                 </li>
                 <li className="cat-link-item">
-                  <Link
-                    to="men_blazerssuits"
-                    className="cat-link fs-500 text-color-black"
-                  >
-                    Suits & Blazers
-                  </Link>
+                  <AnimatedLink to="men_blazerssuits" text="Suits & Blazers" />
                 </li>
                 <li className="cat-link-item">
-                  <Link
-                    to="men_shorts"
-                    className="cat-link fs-500 text-color-black"
-                  >
-                    Shorts
-                  </Link>
+                  <AnimatedLink to="men_shorts" text="Shorts" />
                 </li>
                 <li className="cat-link-item">
-                  <Link
-                    to="men_jacketscoats"
-                    className="cat-link fs-500 text-color-black"
-                  >
-                    Jackets & Coats
-                  </Link>
-                </li>
-                <li className="cat-link-item">
-                  <Link
-                    to="men_underwear"
-                    className="cat-link fs-500 text-color-black"
-                  >
-                    Underwear
-                  </Link>
+                  <AnimatedLink to="men_jacketscoats" text="Jackets & Coats" />
                 </li>
               </ul>
             </div>
@@ -97,7 +70,7 @@ function CategoriesList() {
               <div className="new-arrival content-col">
                 <div className="new-arrival-content text-align-center">
                   <h2 className="mb content-col-label">The Bestsellers</h2>
-                  <Button />
+                  <Button to="WK11_bestsellers_shop" />
                 </div>
               </div>
             </div>
@@ -108,7 +81,7 @@ function CategoriesList() {
                 <div className="linen-content text-align-center">
                   <h2 className="mb content-col-label">The linen collection</h2>
                   <p className="fs-500 mt mb">Light, airy & effortless</p>
-                  <Button />
+                  <Button to="men_linenclothing" />
                 </div>
               </div>
             </div>
@@ -118,7 +91,7 @@ function CategoriesList() {
               <div className="tailored content-col">
                 <div className="tailored-content text-align-center">
                   <h2 className="mb content-col-label">Tailored collection</h2>
-                  <Button />
+                  <Button to="men_tailored" />
                 </div>
               </div>
             </div>

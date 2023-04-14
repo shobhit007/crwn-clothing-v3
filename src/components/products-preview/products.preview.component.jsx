@@ -5,6 +5,7 @@ import React, { useEffect, useState } from "react";
 import { data } from "../../shopData";
 
 import Product from "../product/product.component";
+import { Link } from "react-router-dom";
 
 function ProductsPreview() {
   const [products, setProducts] = useState([]);
@@ -33,10 +34,13 @@ function ProductsPreview() {
   }, []);
   return (
     <div className="section">
-      <div className="section-wrapper container">
+      <div className="section-wrapper ">
         <div className="product-preview-wrapper">
-          <div className="product-preview-info">
+          <div className="product-preview-info flex">
             <p className="product-info-title">New Arrival</p>
+            <Link className="product-info-link" to="/shop/men_newarrivals_all">
+              View all
+            </Link>
           </div>
           <div className="products-preview-container">
             {products.map((item) => (

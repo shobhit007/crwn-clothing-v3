@@ -1,7 +1,37 @@
 .home--hero-section {
   width: 100%;
-  min-height: 100vh;
-  background-image: url("https://images.unsplash.com/photo-1556004583-dedac36780e2?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80");
-  background-repeat: no-repeat;
-  background-size: cover;
+  background-color: var(--clr-white);
+}
+
+.hero-section-container {
+  padding: 2rem 0;
+}
+
+.hero-section-content {
+  width: 94%;
+  max-width: 580px;
+  margin: 0 auto;
+}
+
+.slogn {
+  font-size: clamp(2rem, 5vw, 4rem);
+  font-family: var(--ff-noir), var(--ff-barlow);
+  letter-spacing: 2px;
+  line-height: 1;
+  margin-bottom: 1rem;
+}
+
+.btn-shopnow {
+  width: 8rem;
+  height: 8rem;
+  display: inline-block;
+  background-color: #f5f1ec;
+  color: var(--clr-black);
+  text-decoration: none;
+  font-size: 1.12rem;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
 }

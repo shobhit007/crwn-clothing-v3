@@ -1,4 +1,8 @@
 /* cart product card */
+.cart-product-card:not(:first-child) {
+  margin-top: 2rem;
+}
+
 .cart-product-wrapper {
   display: flex;
 }

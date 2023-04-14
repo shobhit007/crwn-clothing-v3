@@ -1,85 +1,45 @@
 import "./products.list.styles.css";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 
 import { useParams } from "react-router-dom";
 
-import api from "../../api/api";
+import { useDispatch, useSelector } from "react-redux";
 
-import axios from "axios";
+import { setFetchProductsStart } from "../../store/product/product.action";
+
+import { selectProductsList } from "../../store/product/product.selector";
 
 import Product from "../product/product.component";
 
+import Spinner from "../spinner/spinner.component";
+
 function ProductsList() {
   const { categoryId } = useParams();
-  const [categoryItems, setCategoryItems] = useState(null);
-  const [currentpage, setCurrentPage] = useState(0);
+  const dispatch = useDispatch();
+
+  const productsData = useSelector(selectProductsList);
 
   useEffect(() => {
-    let subscribe = true;
-    let cancleToken = axios.CancelToken.source();
+    if (productsData?.categoryCode !== categoryId) {
+      dispatch(setFetchProductsStart(categoryId, 0));
+    }
+  }, [categoryId]);
 
-    const getProductsList = async () => {
-      try {
-        const res = await api.get(
-          "/products/list",
-          {
-            params: {
-              country: "us",
-              lang: "en",
-              currentpage,
-              pagesize: "15",
-              categories: categoryId,
-            },
-          },
-          { cancleToken: cancleToken.token }
-        );
-        if (subscribe) {
-          console.log(res.data);
-          alert("starting to update the state");
-          setCategoryItems((preValues) => ({
-            ...res.data,
-            results: preValues
-              ? [...preValues.results, ...res.data.results]
-              : res.data.results,
-          }));
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    };
-
-    //calling method
-    getProductsList();
-
-    // cleanup function
-    return () => {
-      subscribe = false;
-      cancleToken.cancel();
-    };
-  }, [categoryId, currentpage]);
-
-  const loadMoreItems = () => setCurrentPage((v) => v + 1);
-
-  return categoryItems ? (
+  return productsData && productsData.categoryCode === categoryId ? (
     <div className="section">
       <div className="section-wrapper container">
         <div className="products-list-container">
           <div className="products-list-wrapper grid">
-            {categoryItems.results.map((item) => (
+            {productsData.results.map((item) => (
               <Product key={item.code} product={item} />
             ))}
-          </div>
-          <div className="text-align-center mt" style={{ "--mt": "2rem" }}>
-            {currentpage < categoryItems.pagination.numberOfPages && (
-              <button className="load-more" onClick={loadMoreItems}>
-                Load more
-              </button>
-            )}
           </div>
         </div>
       </div>
     </div>
-  ) : null;
+  ) : (
+    <Spinner />
+  );
 }
 
 export default ProductsList;

@@ -1,17 +1,21 @@
 import "./productDetail.css";
-import React, { useEffect, useState, useLayoutEffect } from "react";
+import React, { useEffect, useState, useLayoutEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
-// import api from "../../api/api";
-
-import { productData } from "../../product.data";
-
 import { useDispatch, useSelector } from "react-redux";
 
 import { addItemToCart } from "../../store/cart/cart.actions";
+import { selectCartItems } from "../../store/cart/cart.selectors";
+
+import { setFetchProductDetailsStart } from "../../store/product/product.action";
+import { selectProductDetails } from "../../store/product/product.selector";
+
+import Spinner from "../../components/spinner/spinner.component";
+
+// import { productData } from "../../product.data";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -35,36 +39,29 @@ const getProductVariantSizes = (product, productId) => {
 
 function ProductDetail() {
   const { id: productId } = useParams();
-  const [product, setProduct] = useState(null);
   const [isModalOpen, setIsmodalOpen] = useState(false);
   const [productSize, setProductSize] = useState("");
+  // const [product, setProduct] = useState(null);
+
+  const sliderRef = useRef(null);
+  const slideIndicator = useRef(null);
+  let indicatorIndex = 0;
 
   const dispatch = useDispatch();
 
-  const cartItems = useSelector((state) => state.cart.cartItems);
+  const cartItems = useSelector(selectCartItems);
+
+  const product = useSelector(selectProductDetails);
 
   useEffect(() => {
-    // const getProductDetail = async () => {
-    //   try {
-    //     const response = await api.get(`/products/detail`, {
-    //       params: {
-    //         lang: "en",
-    //         country: "us",
-    //         productcode: productId,
-    //       },
-    //     });
-    //     setProduct(response.data.product);
-    //   } catch (error) {
-    //     console.log(error);
-    //   }
-    // };
-
-    // getProductDetail();
-    setProduct(productData);
-  }, []);
+    if (product?.code !== productId) {
+      dispatch(setFetchProductDetailsStart(productId));
+    }
+    // setProduct(productData);
+  }, [productId]);
 
   useEffect(() => {
-    if (product) {
+    if (product && product.code === productId) {
       const productSizes = getProductVariantSizes(product, productId);
 
       setProductSize(productSizes[0].size.sizeFilter);
@@ -72,7 +69,7 @@ function ProductDetail() {
   }, [product, productId]);
 
   useEffect(() => {
-    if (product) {
+    if (product && product.code === productId) {
       const modal = document.querySelector(".modal");
 
       const toggleModal = (event) => {
@@ -85,7 +82,7 @@ function ProductDetail() {
 
       return () => window.removeEventListener("click", toggleModal);
     }
-  }, [product]);
+  }, [product, productId]);
 
   useEffect(() => {
     isModalOpen && (document.body.style.overflow = "hidden");
@@ -94,7 +91,7 @@ function ProductDetail() {
 
   useLayoutEffect(() => {
     let mm = gsap.matchMedia();
-    if (product) {
+    if (product && product.code === productId) {
       const galleryImages = getProductImages(product, productId);
       mm.add("(min-width: 991px)", () => {
         ScrollTrigger.create({
@@ -102,7 +99,6 @@ function ProductDetail() {
           start: "top top",
           end: `+=${(galleryImages.length - 1) * 100}%`,
           pin: ".product-info-wrapper",
-          scrub: 1,
           snap: {
             snapTo: 1 / (galleryImages.length - 1),
             delay: 1,
@@ -110,8 +106,32 @@ function ProductDetail() {
           },
         });
       });
+
+      mm.add("(max-width: 990px)", () => {
+        ScrollTrigger.create({
+          trigger: ".images-wrapper",
+          start: "top top",
+          end: "+=150",
+          pin: true,
+          pinSpacing: false,
+        });
+
+        ScrollTrigger.create({
+          trigger: ".product-info-wrapper",
+          scroller: ".images-wrapper",
+          pin: true,
+          pinSpacing: false,
+        });
+      });
     }
     return () => mm.revert();
+  }, [product, productId]);
+
+  useEffect(() => {
+    if (product && product.code === productId) {
+      const totalImages = getProductImages(product, productId).length;
+      slideIndicator.current.style.width = `${(1 / totalImages) * 100}%`;
+    }
   }, [product, productId]);
 
   const addCartItem = () =>
@@ -128,11 +148,32 @@ function ProductDetail() {
     setIsmodalOpen((p) => !p);
   };
 
-  return product ? (
+  const nextSlide = () => {
+    const sliderWidth = sliderRef.current.offsetWidth;
+    sliderRef.current.scrollLeft = sliderRef.current.scrollLeft + sliderWidth;
+
+    // slide indicator
+    indicatorIndex < getProductImages(product, productId).length - 1 &&
+      indicatorIndex++;
+    const indicator = slideIndicator.current;
+    indicator.style.transform = `translateX(${indicatorIndex * 100}%)`;
+  };
+
+  const preSlide = () => {
+    const sliderWidth = sliderRef.current.offsetWidth;
+    sliderRef.current.scrollLeft = sliderRef.current.scrollLeft - sliderWidth;
+
+    // slide indicator
+    indicatorIndex > 0 && indicatorIndex--;
+    const indicator = slideIndicator.current;
+    indicator.style.transform = `translateX(${indicatorIndex * 100}%)`;
+  };
+
+  return product && product.code === productId ? (
     <div className="product-detial-container">
       <div className="product-detail-wrapper">
         <div className="images-wrapper">
-          <ul className="image-slider">
+          <ul className="image-slider" ref={sliderRef}>
             {getProductImages(product, productId).map((image) => (
               <li className="product-slide-item" key={image.id}>
                 <img
@@ -143,6 +184,13 @@ function ProductDetail() {
               </li>
             ))}
           </ul>
+          <button className="pre-button slider-button" onClick={preSlide}>
+            <i className="ri-arrow-left-s-line"></i>
+          </button>
+          <button className="next-button slider-button" onClick={nextSlide}>
+            <i className="ri-arrow-right-s-line"></i>
+          </button>
+          <div className="slide-indicator" ref={slideIndicator}></div>
         </div>
         <div className="product-info-wrapper">
           <div className="info-container">
@@ -267,7 +315,9 @@ function ProductDetail() {
         </div>
       </div>
     </div>
-  ) : null;
+  ) : (
+    <Spinner />
+  );
 }
 
 export default ProductDetail;
