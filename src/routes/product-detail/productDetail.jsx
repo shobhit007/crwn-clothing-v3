@@ -15,8 +15,6 @@ import { selectProductDetails } from "../../store/product/product.selector";
 
 import Spinner from "../../components/spinner/spinner.component";
 
-// import { productData } from "../../product.data";
-
 gsap.registerPlugin(ScrollTrigger);
 
 const getProductImages = (product, productId) => {
@@ -41,7 +39,6 @@ function ProductDetail() {
   const { id: productId } = useParams();
   const [isModalOpen, setIsmodalOpen] = useState(false);
   const [productSize, setProductSize] = useState("");
-  // const [product, setProduct] = useState(null);
 
   const sliderRef = useRef(null);
   const slideIndicator = useRef(null);
@@ -57,7 +54,6 @@ function ProductDetail() {
     if (product?.code !== productId) {
       dispatch(setFetchProductDetailsStart(productId));
     }
-    // setProduct(productData);
   }, [productId]);
 
   useEffect(() => {
