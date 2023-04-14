@@ -52,7 +52,7 @@ const Product = ({ product }) => {
       curretTarget.removeEventListener("onmouseenter", productNextImage);
       curretTarget.removeEventListener("onmouseleave", productPreviousImage);
     };
-  }, []);
+  }, [galleryImages]);
 
   return (
     <div className="product" ref={productRef}>

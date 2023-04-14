@@ -39,7 +39,7 @@ function CartModal() {
     cartModal.addEventListener("click", handleCart);
 
     return () => cartModal.removeEventListener("click", handleCart);
-  }, []);
+  }, [dispatch]);
 
   const handleCartOpen = () => dispatch(setIsCartOpen());
 

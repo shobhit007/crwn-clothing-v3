@@ -23,7 +23,7 @@ function ProductsList() {
     if (productsData?.categoryCode !== categoryId) {
       dispatch(setFetchProductsStart(categoryId, 0));
     }
-  }, [categoryId]);
+  }, [categoryId, dispatch, productsData]);
 
   return productsData && productsData.categoryCode === categoryId ? (
     <div className="section">

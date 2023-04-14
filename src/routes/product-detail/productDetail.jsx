@@ -54,7 +54,7 @@ function ProductDetail() {
     if (product?.code !== productId) {
       dispatch(setFetchProductDetailsStart(productId));
     }
-  }, [productId]);
+  }, [productId, dispatch, product]);
 
   useEffect(() => {
     if (product && product.code === productId) {
