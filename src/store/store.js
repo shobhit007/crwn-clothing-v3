@@ -10,7 +10,10 @@ import { rootSaga } from "./rootSaga";
 
 const sagaMiddleWare = createSagaMiddleWare();
 
-const middlewares = [logger, sagaMiddleWare];
+const middlewares = [
+  process.env.NODE_ENV !== "production" && logger,
+  sagaMiddleWare,
+].filter(Boolean);
 
 const config = {
   key: "root",
