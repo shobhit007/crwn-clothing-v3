@@ -102,23 +102,6 @@ function ProductDetail() {
           },
         });
       });
-
-      mm.add("(max-width: 990px)", () => {
-        ScrollTrigger.create({
-          trigger: ".images-wrapper",
-          start: "top top",
-          end: "+=150",
-          pin: true,
-          pinSpacing: false,
-        });
-
-        ScrollTrigger.create({
-          trigger: ".product-info-wrapper",
-          scroller: ".images-wrapper",
-          pin: true,
-          pinSpacing: false,
-        });
-      });
     }
     return () => mm.revert();
   }, [product, productId]);
